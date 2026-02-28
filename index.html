@@ -311,10 +311,17 @@
 
       // Update online status
       function setOnlineStatus(status) {
-        if (currentUser) db.ref('users/' + currentUser.username).update({ status });
+        if (currentUser) {
+          // If we are in a match, don't set to away automatically
+          if (status === 'away' && currentMatch) return;
+          db.ref('users/' + currentUser.username).update({ status, lastActive: Date.now() });
+        }
       }
 
-      window.onbeforeunload = () => setOnlineStatus('offline');
+      window.onbeforeunload = () => {
+        if (currentMatch) leaveMatch();
+        setOnlineStatus('offline');
+      };
       window.onfocus = () => setOnlineStatus('online');
       window.onblur = () => setOnlineStatus('away');
 
@@ -323,12 +330,30 @@
         const saved = localStorage.getItem('gambo_user');
         if (saved) loginUser(saved);
         
-        // Input focus listeners to prevent game movement
+        // Input focus listeners
         document.querySelectorAll('input').forEach(input => {
           input.addEventListener('focus', () => window.isInputFocused = true);
           input.addEventListener('blur', () => window.isInputFocused = false);
         });
       };
+
+      async function leaveMatch() {
+        if (!currentMatch) return;
+        if (confirm("Are you sure you want to leave the game?")) {
+          const matchId = currentMatch;
+          currentMatch = null;
+          
+          // Cleanup database
+          if (isHost) {
+            await db.ref('matches/' + matchId).remove();
+          } else {
+            // Guest just leaves
+            await db.ref('matches/' + matchId + '/guest_left').set(true);
+          }
+          
+          location.reload(); // Simplest way to reset everything
+        }
+      }
 
       function listenForChallenges(username) {
         db.ref('challenges/' + username).on('value', snapshot => {
@@ -385,16 +410,31 @@
         currentMatch = matchId;
         isHost = asHost;
         document.getElementById('friends-panel').classList.add('hidden');
-        document.getElementById('social-hub').classList.add('hidden');
+        document.getElementById('social-hub').classList.remove('hidden'); // Ensure it's visible
+        document.getElementById('leave-game-btn').classList.remove('hidden');
         document.getElementById('lobby-ui').classList.add('hidden');
         
         // Start Phaser Game
         window.startGame({ matchId, isHost, myChar, otherChar });
         
-        setInterval(syncGameState, 33);
+        const syncInterval = setInterval(() => {
+          if (!currentMatch) {
+            clearInterval(syncInterval);
+            return;
+          }
+          syncGameState();
+        }, 33);
+
         db.ref('matches/' + matchId).on('value', snap => {
           const state = snap.val();
-          if (state) applyRemoteState(state);
+          if (!state || state.guest_left) {
+            if (currentMatch) {
+              alert("The other player has left the game.");
+              location.reload();
+            }
+            return;
+          }
+          applyRemoteState(state);
         });
       }
 
@@ -610,6 +650,9 @@
     </div>
 
     <div id="social-hub" class="hidden">
+      <button id="leave-game-btn" class="social-btn hidden" onclick="leaveMatch()" style="background:#ef4444;">
+        <span>🚪 Leave Game</span>
+      </button>
       <button class="social-btn" onclick="toggleFriendsPanel()">
         <span>👥 Friends</span>
         <span id="req-badge" class="badge hidden">0</span>

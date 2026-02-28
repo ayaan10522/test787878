@@ -70,15 +70,46 @@ class LoadingScene extends Phaser.Scene {
     constructor() { super('LoadingScene'); }
     init(data) { this.startData = data; }
     preload() {
+        const loadingText = this.add.text(576, 384, 'LOADING ASSETS...', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+        
+        // Progress bar
+        const progressBar = this.add.graphics();
+        const progressBox = this.add.graphics();
+        progressBox.fillStyle(0x222222, 0.8);
+        progressBox.fillRect(376, 420, 400, 50);
+
+        this.load.on('progress', (value) => {
+            progressBar.clear();
+            progressBar.fillStyle(0x3b82f6, 1);
+            progressBar.fillRect(386, 430, 380 * value, 30);
+        });
+
+        this.load.on('complete', () => {
+            loadingText.setText('READY!');
+            setTimeout(() => {
+                this.scene.start('GameScene', this.startData);
+            }, 500);
+        });
+
+        // Fallback: Start game anyway if it takes too long
+        this.time.delayedCall(5000, () => {
+            if (this.scene.isActive('LoadingScene')) {
+                console.log("Loading timed out, starting game...");
+                this.scene.start('GameScene', this.startData);
+            }
+        });
+
+        // Assets
         this.load.image('soccer_field_background', 'https://cdn-game-mcp.gambo.ai/676085e5-65fe-4db4-85cb-3be2f7a27e14/images/clean_soccer_field_background.png');
         this.load.image('soccer_ball', 'https://cdn-game-mcp.gambo.ai/5c66fbc0-7e63-4a2d-800d-14a844f5c1e0/images/soccer_ball.png');
         this.load.image('player1_idle_frame1', 'https://cdn-game-mcp.gambo.ai/b81f2b2f-0ae0-4d02-b06a-9ffbbf27614b/animations/messi_idle_R/frame_1.png');
         this.load.image('player2_idle_frame1', 'https://cdn-game-mcp.gambo.ai/d515e62f-46fe-4011-85b6-2dce3bc71fe8/animations/ronaldo_idle_R/frame_1.png');
         this.load.image('goal_left', 'https://cdn-game-mcp.gambo.ai/004e6037-b271-4ba5-86d3-cba18a7ddc4d/images/fixed_goal_left.png');
         this.load.image('goal_right', 'https://cdn-game-mcp.gambo.ai/6561a879-0e5d-4397-b358-e2757f44865e/images/fixed_goal_right.png');
-        this.add.text(576, 384, 'GETTING READY...', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
     }
-    create() { this.scene.start('GameScene', this.startData); }
+    create() {
+        // Handled by 'complete' listener in preload
+    }
 }
 
 class GameScene extends Phaser.Scene {

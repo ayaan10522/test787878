@@ -25,9 +25,564 @@
         background: black;
         margin: 0;
         padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+        overflow: hidden;
+      }
+      
+      /* Overlay for UI */
+      #ui-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        transition: opacity 0.3s ease;
+      }
+
+      .card {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 16px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.1s ease, background 0.2s ease;
+        margin-top: 1rem;
+      }
+
+      .btn-primary {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #2563eb;
+      }
+
+      .btn-secondary {
+        background: #374151;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #4b5563;
+      }
+
+      .input-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        color: #9ca3af;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 0.75rem;
+        background: #2d2d2d;
+        border: 1px solid #444;
+        border-radius: 8px;
+        color: white;
+        outline: none;
+        box-sizing: border-box;
+      }
+
+      .input-group input:focus {
+        border-color: #3b82f6;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* Social Hub */
+      #social-hub {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 900;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .social-btn {
+        background: rgba(26, 26, 26, 0.8);
+        border: 1px solid #444;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+      }
+
+      #friends-panel {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        width: 320px;
+        height: calc(100% - 120px);
+        background: rgba(26, 26, 26, 0.95);
+        border: 1px solid #444;
+        border-radius: 16px;
+        z-index: 850;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+      }
+
+      .friends-list {
+        flex: 1;
+        overflow-y: auto;
+        margin-top: 1rem;
+      }
+
+      .friend-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        border-bottom: 1px solid #333;
+      }
+
+      .friend-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .friend-name {
+        font-weight: 600;
+      }
+
+      .friend-status {
+        font-size: 0.75rem;
+        color: #10b981;
+      }
+
+      .badge {
+        background: #ef4444;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: 5px;
       }
     </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <script>
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBo3Gwptq1cbCqwP_DFQFdV7vgWuOZiQCg",
+        authDomain: "ojbn-c0ac5.firebaseapp.com",
+        databaseURL: "https://ojbn-c0ac5-default-rtdb.firebaseio.com",
+        projectId: "ojbn-c0ac5",
+        storageBucket: "ojbn-c0ac5.firebasestorage.app",
+        messagingSenderId: "874334079680",
+        appId: "1:874334079680:web:5da727d5e3c496bc737b25",
+        measurementId: "G-R79NKBX8LY"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.database();
+
+      // Social System Logic
+      let currentUser = null;
+      let friends = [];
+      let requests = [];
+
+      let currentMatch = null;
+      let isHost = false;
+
+      function updateUIForAuth(user) {
+        currentUser = user;
+        if (user) {
+          document.getElementById('ui-overlay').classList.add('hidden');
+          document.getElementById('social-hub').classList.remove('hidden');
+          setupUserInDB(user);
+          listenToSocialUpdates(user.uid);
+          listenForChallenges(user.uid);
+        } else {
+          document.getElementById('ui-overlay').classList.remove('hidden');
+          document.getElementById('social-hub').classList.add('hidden');
+          document.getElementById('friends-panel').classList.add('hidden');
+        }
+      }
+
+      async function setupUserInDB(user) {
+        const userRef = db.ref('users/' + user.uid);
+        const snapshot = await userRef.get();
+        if (!snapshot.exists()) {
+          await userRef.set({
+            username: user.email.split('@')[0],
+            email: user.email,
+            status: 'online',
+            lastActive: Date.now()
+          });
+        } else {
+          await userRef.update({ status: 'online', lastActive: Date.now() });
+        }
+      }
+
+      function listenToSocialUpdates(uid) {
+        // Listen to friend requests
+        db.ref('requests/' + uid).on('value', snapshot => {
+          const data = snapshot.val() || {};
+          requests = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+          updateSocialBadges();
+          renderRequests();
+        });
+
+        // Listen to friends
+        db.ref('friends/' + uid).on('value', async snapshot => {
+          const data = snapshot.val() || {};
+          const friendIds = Object.keys(data);
+          const friendPromises = friendIds.map(async id => {
+            const userSnap = await db.ref('users/' + id).get();
+            return { id, ...userSnap.val() };
+          });
+          friends = await Promise.all(friendPromises);
+          renderFriends();
+        });
+      }
+
+      function updateSocialBadges() {
+        const count = requests.length;
+        const badge = document.getElementById('req-badge');
+        if (count > 0) {
+          badge.textContent = count;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+
+      async function sendFriendRequest(targetEmail) {
+        const usersSnap = await db.ref('users').orderByChild('email').equalTo(targetEmail).get();
+        if (!usersSnap.exists()) {
+          alert("User not found!");
+          return;
+        }
+        const targetId = Object.keys(usersSnap.val())[0];
+        if (targetId === currentUser.uid) {
+          alert("You can't add yourself!");
+          return;
+        }
+        await db.ref('requests/' + targetId + '/' + currentUser.uid).set({
+          from: currentUser.email.split('@')[0],
+          timestamp: Date.now()
+        });
+        alert("Friend request sent!");
+      }
+
+      async function acceptRequest(requestId) {
+        const updates = {};
+        updates[`friends/${currentUser.uid}/${requestId}`] = true;
+        updates[`friends/${requestId}/${currentUser.uid}`] = true;
+        updates[`requests/${currentUser.uid}/${requestId}`] = null;
+        await db.ref().update(updates);
+      }
+
+      function renderFriends() {
+        const list = document.getElementById('friends-list-container');
+        list.innerHTML = friends.length === 0 ? '<p style="color:#666; text-align:center;">No friends yet</p>' : '';
+        friends.forEach(f => {
+          const div = document.createElement('div');
+          div.className = 'friend-item';
+          div.innerHTML = `
+            <div class="friend-info">
+              <span class="friend-name">${f.username}</span>
+              <span class="friend-status">${f.status}</span>
+            </div>
+            <button onclick="challengeFriend('${f.id}')" style="background:#10b981; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.75rem; cursor:pointer;">Play</button>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      function renderRequests() {
+        const list = document.getElementById('requests-list-container');
+        list.innerHTML = requests.length === 0 ? '<p style="color:#666; text-align:center;">No pending requests</p>' : '';
+        requests.forEach(r => {
+          const div = document.createElement('div');
+          div.className = 'friend-item';
+          div.innerHTML = `
+            <span class="friend-name">${r.from}</span>
+            <button onclick="acceptRequest('${r.id}')" style="background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:0.75rem; cursor:pointer;">Accept</button>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      function listenForChallenges(uid) {
+        db.ref('challenges/' + uid).on('value', snapshot => {
+          const data = snapshot.val();
+          if (data) {
+            const [challengerId, challenge] = Object.entries(data)[0];
+            if (confirm(`${challenge.from} challenged you to a game! Accept?`)) {
+              acceptChallenge(challengerId, challenge);
+            }
+          }
+        });
+      }
+
+      async function challengeFriend(friendId) {
+        const challengeRef = db.ref('challenges/' + friendId + '/' + currentUser.uid);
+        await challengeRef.set({
+          from: currentUser.email.split('@')[0],
+          timestamp: Date.now(),
+          status: 'pending'
+        });
+        
+        // Listen for match creation
+        db.ref('matches').orderByChild('host').equalTo(currentUser.uid).on('child_added', snapshot => {
+          const match = snapshot.val();
+          if (match.guest === friendId) {
+            startMatch(snapshot.key, true);
+          }
+        });
+      }
+
+      async function acceptChallenge(challengerId, challenge) {
+        const matchId = 'match_' + Date.now();
+        await db.ref('matches/' + matchId).set({
+          host: challengerId,
+          guest: currentUser.uid,
+          ball: { x: 576, y: 384, vx: 0, vy: 0 },
+          p1: { x: 100, y: 648 },
+          p2: { x: 1052, y: 648 },
+          score: { p1: 0, p2: 0 },
+          status: 'playing'
+        });
+        await db.ref('challenges/' + currentUser.uid + '/' + challengerId).remove();
+        startMatch(matchId, false);
+      }
+
+      function startMatch(matchId, asHost) {
+        currentMatch = matchId;
+        isHost = asHost;
+        console.log(`🎮 Match started! ID: ${matchId}, Host: ${asHost}`);
+        
+        // Hide UI
+        document.getElementById('friends-panel').classList.add('hidden');
+        
+        // Disable keys for the other player
+        if (window.game) {
+          const scene = window.game.scene.getScene('GameScene');
+          if (scene && scene.input && scene.input.keyboard) {
+            // P1 keys: W(87), A(65), S(83), D(68), Space(32)
+            // P2 keys: Up(38), Left(37), Down(40), Right(39), Shift(16)
+            const p1Keys = [87, 65, 83, 68, 32];
+            const p2Keys = [38, 37, 40, 39, 16];
+            
+            scene.input.keyboard.on('keydown', (event) => {
+              if (asHost && p2Keys.includes(event.keyCode)) {
+                event.stopPropagation();
+              } else if (!asHost && p1Keys.includes(event.keyCode)) {
+                event.stopPropagation();
+              }
+            }, true);
+          }
+        }
+        
+        // Sync loop
+        setInterval(syncGameState, 33); // ~30fps sync
+        
+        // Listen for updates from other player
+        db.ref('matches/' + matchId).on('value', snapshot => {
+          const state = snapshot.val();
+          if (!state) return;
+          applyRemoteState(state);
+        });
+      }
+
+      function syncGameState() {
+        if (!currentMatch || !window.game) return;
+        const scene = window.game.scene.getScene('GameScene');
+        if (!scene || !scene.player1 || !scene.player2 || !scene.ball) return;
+
+        const updates = {};
+        if (isHost) {
+          updates[`matches/${currentMatch}/p1`] = { x: scene.player1.x, y: scene.player1.y };
+          updates[`matches/${currentMatch}/ball`] = { 
+            x: scene.ball.x, 
+            y: scene.ball.y, 
+            vx: scene.ball.body.velocity.x, 
+            vy: scene.ball.body.velocity.y 
+          };
+          updates[`matches/${currentMatch}/score`] = { p1: scene.player1Score, p2: scene.player2Score };
+        } else {
+          updates[`matches/${currentMatch}/p2`] = { x: scene.player2.x, y: scene.player2.y };
+        }
+        db.ref().update(updates);
+      }
+
+      function applyRemoteState(state) {
+        if (!window.game) return;
+        const scene = window.game.scene.getScene('GameScene');
+        if (!scene) return;
+
+        if (isHost) {
+          // Sync Guest player (P2)
+          if (scene.player2) {
+            scene.player2.x = state.p2.x;
+            scene.player2.y = state.p2.y;
+          }
+        } else {
+          // Sync Host player (P1) and Ball and Score
+          if (scene.player1) {
+            scene.player1.x = state.p1.x;
+            scene.player1.y = state.p1.y;
+          }
+          if (scene.ball) {
+            scene.ball.x = state.ball.x;
+            scene.ball.y = state.ball.y;
+            scene.ball.body.setVelocity(state.ball.vx, state.ball.vy);
+          }
+          if (state.score) {
+            scene.player1Score = state.score.p1;
+            scene.player2Score = state.score.p2;
+            if (scene.gameUI) scene.gameUI.updateScore(state.score.p1, state.score.p2);
+          }
+        }
+      }
+
+      // Initialize Auth listener
+      auth.onAuthStateChanged(updateUIForAuth);
+    </script>
+
     <script type="module" crossorigin src="/assets/index-m3e_drdg.js"></script>
   </head>
-  <body></body>
+  <body>
+    <!-- Auth UI Overlay -->
+    <div id="ui-overlay">
+      <!-- Login Card -->
+      <div id="login-card" class="card">
+        <h2 style="margin-top:0; text-align:center;">Login to Gambo</h2>
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="login-email" placeholder="email@example.com">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" onclick="handleLogin()">Login</button>
+        <p style="text-align:center; font-size:0.875rem; color:#9ca3af; margin-top:1.5rem;">
+          Don't have an account? <a href="#" onclick="toggleAuth()" style="color:#3b82f6; text-decoration:none;">Sign Up</a>
+        </p>
+      </div>
+
+      <!-- Sign Up Card -->
+      <div id="signup-card" class="card hidden">
+        <h2 style="margin-top:0; text-align:center;">Create Account</h2>
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="signup-email" placeholder="email@example.com">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="signup-password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" onclick="handleSignUp()">Sign Up</button>
+        <p style="text-align:center; font-size:0.875rem; color:#9ca3af; margin-top:1.5rem;">
+          Already have an account? <a href="#" onclick="toggleAuth()" style="color:#3b82f6; text-decoration:none;">Login</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Social Hub -->
+    <div id="social-hub" class="hidden">
+      <button class="social-btn" onclick="toggleFriendsPanel()">
+        <span>👥 Friends</span>
+        <span id="req-badge" class="badge hidden">0</span>
+      </button>
+      <button class="social-btn" onclick="auth.signOut()">
+        <span>🚪 Logout</span>
+      </button>
+    </div>
+
+    <!-- Friends Panel -->
+    <div id="friends-panel" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0;">Social Hub</h3>
+        <button onclick="toggleFriendsPanel()" style="background:none; border:none; color:#666; cursor:pointer; font-size:1.5rem;">&times;</button>
+      </div>
+      
+      <div style="margin-top:1.5rem;">
+        <div class="input-group">
+          <input type="email" id="add-friend-email" placeholder="Friend's email...">
+          <button class="btn btn-secondary" style="margin-top:0.5rem;" onclick="sendFriendRequest(document.getElementById('add-friend-email').value)">Add Friend</button>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem; font-size:0.8rem; font-weight:bold; color:#666; text-transform:uppercase;">Friend Requests</div>
+      <div id="requests-list-container" class="friends-list" style="max-height: 100px;"></div>
+
+      <div style="margin-top:1rem; font-size:0.8rem; font-weight:bold; color:#666; text-transform:uppercase;">Friends</div>
+      <div id="friends-list-container" class="friends-list"></div>
+    </div>
+
+    <script>
+      function toggleAuth() {
+        document.getElementById('login-card').classList.toggle('hidden');
+        document.getElementById('signup-card').classList.toggle('hidden');
+      }
+
+      function toggleFriendsPanel() {
+        document.getElementById('friends-panel').classList.toggle('hidden');
+      }
+
+      async function handleLogin() {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        try {
+          await auth.signInWithEmailAndPassword(email, pass);
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+
+      async function handleSignUp() {
+        const email = document.getElementById('signup-email').value;
+        const pass = document.getElementById('signup-password').value;
+        try {
+          await auth.createUserWithEmailAndPassword(email, pass);
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+    </script>
+  </body>
 </html>

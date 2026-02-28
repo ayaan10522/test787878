@@ -180,6 +180,50 @@
       .char-option:hover { border-color: #2563eb; background: #1a1a1a; }
       .char-option.selected { border-color: #2563eb; background: #1e3a8a; }
       .char-option img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+
+      /* Lobby UI */
+      #lobby-ui {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        z-index: 100;
+      }
+
+      .lobby-content {
+        text-align: center;
+        max-width: 600px;
+      }
+
+      .lobby-title {
+        font-size: 4rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #3b82f6, #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -2px;
+      }
+
+      .lobby-subtitle {
+        font-size: 1.25rem;
+        color: #94a3b8;
+        margin-bottom: 3rem;
+      }
+
+      .welcome-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        border-radius: 24px;
+        backdrop-filter: blur(10px);
+      }
     </style>
 
     <!-- Firebase SDKs -->
@@ -240,6 +284,8 @@
         localStorage.setItem('gambo_user', username);
         document.getElementById('ui-overlay').classList.add('hidden');
         document.getElementById('social-hub').classList.remove('hidden');
+        document.getElementById('lobby-ui').classList.remove('hidden');
+        document.getElementById('welcome-username').textContent = username;
         listenToSocialUpdates(username);
         listenForChallenges(username);
         
@@ -331,6 +377,7 @@
         isHost = asHost;
         document.getElementById('friends-panel').classList.add('hidden');
         document.getElementById('social-hub').classList.add('hidden');
+        document.getElementById('lobby-ui').classList.add('hidden');
         
         // Start Phaser Game
         window.startGame({ matchId, isHost, myChar, otherChar });
@@ -502,6 +549,29 @@
           </div>
         </div>
         <button class="btn btn-primary" onclick="confirmChallenge()">START MATCH</button>
+      </div>
+    </div>
+
+    <!-- Lobby UI -->
+    <div id="lobby-ui" class="hidden">
+      <div class="lobby-content">
+        <h1 class="lobby-title">GAMBO ONLINE</h1>
+        <p class="lobby-subtitle">Real-time 1v1 Multiplayer Soccer</p>
+        
+        <div class="welcome-card">
+          <h2 style="margin-top:0;">Welcome back, <span id="welcome-username" style="color:#3b82f6;">Player</span>!</h2>
+          <p style="color:#94a3b8; line-height:1.6;">
+            You are now in the social lobby. Use the <b>Friends</b> button in the top right to:
+          </p>
+          <ul style="text-align:left; color:#cbd5e1; display:inline-block; margin:1rem 0;">
+            <li>Search and add friends by username</li>
+            <li>Accept incoming friend requests</li>
+            <li>Challenge online friends to 1v1 matches</li>
+          </ul>
+          <p style="font-size:0.9rem; color:#64748b; margin-top:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">
+            Select your character (Messi or Ronaldo) after challenging a friend!
+          </p>
+        </div>
       </div>
     </div>
 

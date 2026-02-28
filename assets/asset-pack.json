@@ -1,0 +1,285 @@
+{
+  "fonts": {
+    "files": [
+      {
+        "url": "https://cdn-game-mcp-test.gambo.ai/shared/retro-pixel-arcade.otf.woff2",
+        "type": "font",
+        "key": "RetroPixel",
+        "fontType": "opentype"
+      }
+    ]
+  },
+  "ui_images": {
+    "files": [
+      {
+        "type": "image",
+        "key": "game_title",
+        "url": "https://cdn-game-mcp.gambo.ai/742b09f8-98a7-4783-942d-eb93423d68f4/images/game_title.png"
+      },
+      {
+        "type": "image",
+        "key": "play_button",
+        "url": "https://cdn-game-mcp.gambo.ai/6b3fdf7f-7402-4d72-921e-a5baaaba040b/images/play_button.png"
+      },
+      {
+        "type": "image",
+        "key": "victory_banner",
+        "url": "https://cdn-game-mcp.gambo.ai/7616df17-17e9-4371-bb97-46933f304df2/images/victory_banner.png"
+      },
+      {
+        "type": "image",
+        "key": "restart_button",
+        "url": "https://cdn-game-mcp.gambo.ai/55b61893-b42f-494b-abee-16958122fd5f/images/restart_button.png"
+      },
+      {
+        "type": "image",
+        "key": "back_button",
+        "url": "https://cdn-game-mcp.gambo.ai/4d2e0a40-3a44-4186-8826-b3b2a3a71656/images/back_button.png"
+      },
+      {
+        "type": "image",
+        "key": "goal_text",
+        "url": "https://cdn-game-mcp.gambo.ai/be331d87-fe16-4362-b4ac-daec3df3312c/images/goal_text.png"
+      },
+      {
+        "type": "image",
+        "key": "stun_stars",
+        "url": "https://cdn-game-mcp.gambo.ai/079fa16c-a96c-403e-819d-a1a7e32f94b2/images/stun_stars.png"
+      }
+    ]
+  },
+  "backgrounds": {
+    "files": [
+      {
+        "type": "image",
+        "key": "clean_soccer_field_background",
+        "url": "https://cdn-game-mcp.gambo.ai/676085e5-65fe-4db4-85cb-3be2f7a27e14/images/clean_soccer_field_background.png"
+      },
+      {
+        "type": "image",
+        "key": "soccer_field_background",
+        "url": "https://cdn-game-mcp.gambo.ai/676085e5-65fe-4db4-85cb-3be2f7a27e14/images/clean_soccer_field_background.png"
+      }
+    ]
+  },
+  "game_objects": {
+    "files": [
+      {
+        "type": "image",
+        "key": "soccer_ball",
+        "url": "https://cdn-game-mcp.gambo.ai/5c66fbc0-7e63-4a2d-800d-14a844f5c1e0/images/soccer_ball.png"
+      },
+      {
+        "type": "image",
+        "key": "goal_left",
+        "url": "https://cdn-game-mcp.gambo.ai/004e6037-b271-4ba5-86d3-cba18a7ddc4d/images/fixed_goal_left.png"
+      },
+      {
+        "type": "image",
+        "key": "goal_right",
+        "url": "https://cdn-game-mcp.gambo.ai/6561a879-0e5d-4397-b358-e2757f44865e/images/fixed_goal_right.png"
+      }
+    ]
+  },
+  "player_animations": {
+    "files": [
+      {
+        "type": "image",
+        "key": "player1_idle_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/b81f2b2f-0ae0-4d02-b06a-9ffbbf27614b/animations/messi_idle_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_idle_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/0d222c5b-b359-4ea8-8ca5-89c9c52b0ec5/animations/messi_idle_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_walk_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/a993b779-151b-4929-86a4-6a042bb1850b/animations/messi_walk_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_walk_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/d1b92fe8-bf88-432f-b6c1-fdcb4d99ba38/animations/messi_walk_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_jump_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/90105f12-a6e3-485b-8f0b-6b25e00caf77/animations/messi_jump_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_jump_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/9f698ea7-035a-4787-9374-fd2df3fc854e/animations/messi_jump_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_slide_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/620e2166-f260-4571-9e1e-93003701703c/animations/messi_slide_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_slide_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/2cb9f11b-3986-4ed2-9912-70ce7b17a2e3/animations/messi_slide_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_kick_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/26a50a04-4056-4ea6-8e82-525745d323a2/animations/messi_kick_no_ball_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_kick_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/45713634-dee8-45d9-87f4-356916427bcc/animations/messi_kick_no_ball_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_idle_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/d515e62f-46fe-4011-85b6-2dce3bc71fe8/animations/ronaldo_idle_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_idle_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/52458cd7-88dd-45bc-b71d-d93933a8b2e1/animations/ronaldo_idle_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_walk_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/48a8a101-ad70-485b-b899-286049cd75c1/animations/ronaldo_walk_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_walk_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/0622c745-7552-4e7c-9273-d08075c9db9a/animations/ronaldo_walk_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_jump_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/1ae10308-c62c-472e-a462-2085f3e4e4f5/animations/ronaldo_jump_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_jump_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/2e7e3cb3-e636-47ee-989d-4a7d56c6f785/animations/ronaldo_jump_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_slide_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/c5bb3a3b-1275-4404-a28c-686fe358a423/animations/ronaldo_slide_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_slide_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/f5b41a18-8a89-472e-8277-c2d4b6b940c2/animations/ronaldo_slide_R/frame_2.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_kick_frame1",
+        "url": "https://cdn-game-mcp.gambo.ai/aa6fd5ff-0adc-470f-b288-78586d20fb17/animations/ronaldo_kick_no_ball_R/frame_1.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_kick_frame2",
+        "url": "https://cdn-game-mcp.gambo.ai/a00d1272-5ab0-4c77-95e1-16de665d20e6/animations/ronaldo_kick_no_ball_R/frame_2.png"
+      }
+    ]
+  },
+  "victory_poses": {
+    "files": [
+      {
+        "type": "image",
+        "key": "player1_victory_pose",
+        "url": "https://cdn-game-mcp.gambo.ai/4bffa057-8648-4497-81a6-3440ee452895/images/player1_victory_pose.png"
+      },
+      {
+        "type": "image",
+        "key": "player1_defeat_pose",
+        "url": "https://cdn-game-mcp.gambo.ai/d3427b87-cae2-41a6-aa16-eb6ee09925d1/images/player1_defeat_pose.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_victory_pose",
+        "url": "https://cdn-game-mcp.gambo.ai/2696e11a-3a50-451d-8c3d-7ebe25ff3351/images/player2_victory_pose.png"
+      },
+      {
+        "type": "image",
+        "key": "player2_defeat_pose",
+        "url": "https://cdn-game-mcp.gambo.ai/3af72827-5eb4-4e5d-b8a1-dcbf044704c6/images/player2_defeat_pose.png"
+      },
+      {
+        "type": "image",
+        "key": "players_draw_pose",
+        "url": "https://cdn-game-mcp.gambo.ai/69bad0c4-0ce9-45f1-9adc-d77d34324ead/images/players_draw_pose.png"
+      }
+    ]
+  },
+  "sound_effects": {
+    "files": [
+      {
+        "type": "audio",
+        "key": "button_click",
+        "url": "https://cdn-game-mcp.gambo.ai/d16b46be-cce6-4c6e-b054-2e2fa2489761/sound_effects/button_click.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "game_start",
+        "url": "https://cdn-game-mcp.gambo.ai/00a37bae-7556-496f-ba71-7f71b9e67eff/sound_effects/game_start.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "ball_kick",
+        "url": "https://cdn-game-mcp.gambo.ai/3610ba89-8cd0-44bb-9e48-fdd343f009f7/sound_effects/ball_kick.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "ball_bounce",
+        "url": "https://cdn-game-mcp.gambo.ai/ef936720-ecb3-4be1-97ee-07976b47b43b/sound_effects/ball_bounce.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "goal_cheer",
+        "url": "https://cdn-game-mcp.gambo.ai/c5780cc1-251b-447d-b0e9-bce1cde3c1f3/sound_effects/goal_cheer.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "whistle",
+        "url": "https://cdn-game-mcp.gambo.ai/31b14ba2-f894-42f4-a297-a949e3caae28/sound_effects/whistle.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "slide_tackle",
+        "url": "https://cdn-game-mcp.gambo.ai/f1a54800-88d2-4e66-b329-fd08b32bf4fb/sound_effects/slide_tackle.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "goal_post_hit",
+        "url": "https://cdn-game-mcp.gambo.ai/1e3b0590-0f27-4ace-ad87-e54142a7b2ce/sound_effects/goal_post_hit.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "victory_fanfare",
+        "url": "https://cdn-game-mcp.gambo.ai/33f7f471-99ee-4ed9-98db-d6bb64a7b0e5/sound_effects/victory_fanfare.mp3"
+      }
+    ]
+  },
+  "background_musics": {
+    "files": [
+      {
+        "type": "audio",
+        "key": "soccer_theme",
+        "url": "https://cdn-game-mcp.gambo.ai/98563b26-c014-490d-9b84-ba1b3548128c/music/soccer_theme.wav"
+      },
+      {
+        "type": "audio",
+        "key": "soccer_match_theme",
+        "url": "https://cdn-game-mcp.gambo.ai/037e9c53-86fe-45bc-9061-7aefeef92481/music/soccer_match_theme.wav"
+      }
+    ]
+  },
+  "meta": {
+    "app": "Gambo AI",
+    "version": 1,
+    "showAllFilesInBlocks": false
+  }
+}

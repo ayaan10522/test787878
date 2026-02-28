@@ -402,31 +402,56 @@
         if (!currentMatch || !window.currentScene) return;
         const scene = window.currentScene;
         const updates = {};
+        
         if (isHost) {
-          updates[`matches/${currentMatch}/p1`] = { x: scene.player1.x, y: scene.player1.y };
-          updates[`matches/${currentMatch}/ball`] = { x: scene.ball.x, y: scene.ball.y, vx: scene.ball.body.velocity.x, vy: scene.ball.body.velocity.y };
-          updates[`matches/${currentMatch}/score`] = { p1: scene.player1Score, p2: scene.player2Score };
+          // Host syncs P1 (self), Ball, and Score
+          if (scene.player1 && scene.ball) {
+            updates[`matches/${currentMatch}/p1`] = { x: scene.player1.x, y: scene.player1.y };
+            updates[`matches/${currentMatch}/ball`] = { 
+              x: scene.ball.x, 
+              y: scene.ball.y, 
+              vx: scene.ball.body.velocity.x, 
+              vy: scene.ball.body.velocity.y 
+            };
+            updates[`matches/${currentMatch}/score`] = { p1: scene.player1Score, p2: scene.player2Score };
+          }
         } else {
-          updates[`matches/${currentMatch}/p2`] = { x: scene.player2.x, y: scene.player2.y };
+          // Guest syncs P2 (self)
+          if (scene.player2) {
+            updates[`matches/${currentMatch}/p2`] = { x: scene.player2.x, y: scene.player2.y };
+          }
         }
-        db.ref().update(updates);
+        
+        if (Object.keys(updates).length > 0) {
+          db.ref().update(updates);
+        }
       }
 
       function applyRemoteState(state) {
         const scene = window.currentScene;
         if (!scene) return;
+        
         if (isHost) {
-          scene.player2.x = state.p2.x;
-          scene.player2.y = state.p2.y;
+          // Host receives Guest (P2) updates
+          if (scene.player2 && state.p2) {
+            scene.player2.setPosition(state.p2.x, state.p2.y);
+          }
         } else {
-          scene.player1.x = state.p1.x;
-          scene.player1.y = state.p1.y;
-          scene.ball.x = state.ball.x;
-          scene.ball.y = state.ball.y;
-          scene.ball.body.setVelocity(state.ball.vx, state.ball.vy);
-          scene.player1Score = state.score.p1;
-          scene.player2Score = state.score.p2;
-          scene.scoreText.setText(`${state.score.p1} - ${state.score.p2}`);
+          // Guest receives Host (P1) and Ball/Score updates
+          if (scene.player1 && state.p1) {
+            scene.player1.setPosition(state.p1.x, state.p1.y);
+          }
+          if (scene.ball && state.ball) {
+            scene.ball.setPosition(state.ball.x, state.ball.y);
+            scene.ball.body.setVelocity(state.ball.vx, state.ball.vy);
+          }
+          if (state.score) {
+            scene.player1Score = state.score.p1;
+            scene.player2Score = state.score.p2;
+            if (scene.scoreText) {
+              scene.scoreText.setText(`${state.score.p1} - ${state.score.p2}`);
+            }
+          }
         }
       }
 

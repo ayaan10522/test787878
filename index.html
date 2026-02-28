@@ -31,9 +31,18 @@
       }
       
       #game-container {
-        width: 1152px;
-        height: 768px;
-        margin: auto;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: black;
+      }
+
+      canvas {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
       }
 
       /* Overlay for UI */

@@ -1,6 +1,6 @@
 // Core Game Logic for Multiplayer Soccer
 const screenSize = { width: 1152, height: 768 };
-const playerConfig = { moveSpeed: 200, jumpPower: -500, slideSpeed: 350 };
+const playerConfig = { moveSpeed: 300, jumpPower: -600, slideSpeed: 350 };
 const ballConfig = { maxSpeed: 800, normalKickForce: 450 };
 
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -18,9 +18,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setScale(0.25); 
         this.setOrigin(0.5, 1);
         
-        // Custom body size
-        this.body.setSize(100, 450);
-        this.body.setOffset(50, 50);
+        // Custom body size for better collision
+        this.body.setSize(200, 500);
+        this.body.setOffset(50, 20);
     }
 
     update(keys) {
@@ -50,17 +50,22 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
         
-        this.setCircle(25);
+        this.setCircle(120); // Scaled for the asset
         this.setBounce(0.8);
         this.setCollideWorldBounds(true);
         this.setDrag(100);
-        this.setScale(0.5);
+        this.setScale(0.15); // Smaller ball
+        this.body.setOffset(150, 150);
     }
 }
 
 class LoadingScene extends Phaser.Scene {
     constructor() {
         super('LoadingScene');
+    }
+
+    init(data) {
+        this.startData = data;
     }
 
     preload() {
@@ -71,11 +76,11 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('goal_left', 'https://cdn-game-mcp.gambo.ai/004e6037-b271-4ba5-86d3-cba18a7ddc4d/images/fixed_goal_left.png');
         this.load.image('goal_right', 'https://cdn-game-mcp.gambo.ai/6561a879-0e5d-4397-b358-e2757f44865e/images/fixed_goal_right.png');
         
-        let loadingText = this.add.text(576, 384, 'Loading...', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+        this.add.text(576, 384, 'Loading Game...', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
     }
 
     create() {
-        this.scene.start('GameScene');
+        this.scene.start('GameScene', this.startData);
     }
 }
 
@@ -94,18 +99,23 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(576, 384, 'soccer_field_background');
+        // Background
+        const bg = this.add.image(576, 384, 'soccer_field_background');
+        bg.setDisplaySize(1152, 768);
         
-        // Goals
-        this.add.image(50, 648, 'goal_left').setOrigin(0.5, 1).setScale(0.8);
-        this.add.image(1102, 648, 'goal_right').setOrigin(0.5, 1).setScale(0.8).setFlipX(true);
+        // Ground level is roughly 648
+        const groundY = 648;
+
+        // Goals - Adjusted positions and scale
+        this.goalLeft = this.add.image(80, groundY, 'goal_left').setOrigin(0.5, 1).setScale(0.6);
+        this.goalRight = this.add.image(1072, groundY, 'goal_right').setOrigin(0.5, 1).setScale(0.6).setFlipX(true);
 
         const p1Char = this.isHost ? this.myChar : this.otherChar;
         const p2Char = this.isHost ? this.otherChar : this.myChar;
 
-        this.player1 = new Player(this, 150, 648, p1Char, 'left');
-        this.player2 = new Player(this, 1002, 648, p2Char, 'right');
-        this.ball = new Ball(this, 576, 384);
+        this.player1 = new Player(this, 200, groundY, p1Char, 'left');
+        this.player2 = new Player(this, 952, groundY, p2Char, 'right');
+        this.ball = new Ball(this, 576, groundY - 100);
 
         this.physics.add.collider(this.player1, this.ball);
         this.physics.add.collider(this.player2, this.ball);
@@ -118,7 +128,13 @@ class GameScene extends Phaser.Scene {
         this.p2Keys = this.input.keyboard.createCursorKeys();
 
         // Score UI
-        this.scoreText = this.add.text(576, 50, '0 - 0', { fontSize: '48px', fill: '#fff', fontStyle: 'bold' }).setOrigin(0.5);
+        this.scoreText = this.add.text(576, 80, '0 - 0', { 
+            fontSize: '64px', 
+            fill: '#fff', 
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 6
+        }).setOrigin(0.5);
 
         window.currentScene = this;
     }
@@ -135,10 +151,10 @@ class GameScene extends Phaser.Scene {
         
         myPlayer.update(myKeys);
 
-        // Goal detection (simple)
-        if (this.ball.x < 50 && this.ball.y > 500) {
+        // Simple goal detection logic
+        if (this.ball.x < 100 && this.ball.y > 450) {
             this.goalScored(2);
-        } else if (this.ball.x > 1102 && this.ball.y > 500) {
+        } else if (this.ball.x > 1052 && this.ball.y > 450) {
             this.goalScored(1);
         }
     }
@@ -162,19 +178,24 @@ const config = {
     width: 1152,
     height: 768,
     parent: 'game-container',
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     physics: {
         default: 'arcade',
-        arcade: { gravity: { y: 1000 }, debug: false }
+        arcade: { gravity: { y: 1200 }, debug: false }
     },
     scene: [LoadingScene, GameScene]
 };
 
 window.startGame = (data) => {
-    if (window.game) window.game.destroy(true);
+    if (window.game) {
+        window.game.destroy(true);
+    }
     window.game = new Phaser.Game(config);
-    // Game will start with LoadingScene automatically
-    // We need to pass data to GameScene when it starts
-    window.game.events.once('ready', () => {
+    // Use timeout to ensure canvas is ready
+    setTimeout(() => {
         window.game.scene.start('LoadingScene', data);
-    });
+    }, 100);
 };

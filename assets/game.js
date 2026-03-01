@@ -84,21 +84,6 @@ class LoadingScene extends Phaser.Scene {
             progressBar.fillRect(386, 430, 380 * value, 30);
         });
 
-        this.load.on('complete', () => {
-            loadingText.setText('READY!');
-            setTimeout(() => {
-                this.scene.start('GameScene', this.startData);
-            }, 500);
-        });
-
-        // Fallback: Start game anyway if it takes too long
-        this.time.delayedCall(5000, () => {
-            if (this.scene.isActive('LoadingScene')) {
-                console.log("Loading timed out, starting game...");
-                this.scene.start('GameScene', this.startData);
-            }
-        });
-
         // Assets
         this.load.image('soccer_field_background', 'https://cdn-game-mcp.gambo.ai/676085e5-65fe-4db4-85cb-3be2f7a27e14/images/clean_soccer_field_background.png');
         this.load.image('soccer_ball', 'https://cdn-game-mcp.gambo.ai/5c66fbc0-7e63-4a2d-800d-14a844f5c1e0/images/soccer_ball.png');
@@ -108,7 +93,7 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('goal_right', 'https://cdn-game-mcp.gambo.ai/6561a879-0e5d-4397-b358-e2757f44865e/images/fixed_goal_right.png');
     }
     create() {
-        // Handled by 'complete' listener in preload
+        this.scene.start('GameScene', this.startData);
     }
 }
 
@@ -182,8 +167,8 @@ class GameScene extends Phaser.Scene {
         // Only host checks for goals
         if (this.isHost) {
             // Precise goal detection: check if ball is inside the goal area
-            if (this.ball.x < 80 && this.ball.y > groundY - 280) this.goalScored(2);
-            else if (this.ball.x > 1072 && this.ball.y > groundY - 280) this.goalScored(1);
+            if (this.ball.x < 80 && this.ball.y > 648 - 280) this.goalScored(2);
+            else if (this.ball.x > 1072 && this.ball.y > 648 - 280) this.goalScored(1);
         }
     }
 
